@@ -13,13 +13,25 @@ fn main () {
 
     let mut i = 0;
     let mut j = 0;
-    let mut word_counts: HashMap<String, u8> = HashMap::new();
+    let mut word_counts: HashMap<String, u64> = HashMap::new();
+    let mut character = false;
     for c in text.chars() {
-        if c == '\n' || c == ' ' || c == '.' || c == ',' || c == '!' || c == '?' || c == ';' || c == '"' {
-            let word = String::from(&text[j..i]).to_lowercase();
-            let count = word_counts.entry(word).or_insert(0);
-            *count += 1;
+        if c == '\n' || c == ' ' || c == '.' || c == ',' || c == '!'
+        || c == '?' || c == ';' || c == '"' || c == '(' || c == ')' {
+            if character {
+                let result = text.get(j..i);
+                let word;
+                match result {
+                    Some(x) => word = String::from(x),
+                    None    => word = "farts".to_string(),
+                }
+                let count = word_counts.entry(word).or_insert(0);
+                *count += 1;
+            }
             j = i + 1;
+            character = false;
+        } else {
+            character = true;
         }
         i += 1;
     }
@@ -28,19 +40,19 @@ fn main () {
 }
 
 fn read_text () -> String {
-    let mut file = File::open("text.txt").expect("Couldn't open");
-    let metadata = fs::metadata("text.txt").expect("Couldn't get metadata");
+    let mut file = File::open("text/atlasshrugged.txt").expect("Couldn't open");
+    let metadata = fs::metadata("text/atlasshrugged.txt").expect("Couldn't get metadata");
     let mut buffer = vec![0; metadata.len() as usize];
     file.read(&mut buffer).expect("Couldn't read");
     return String::from_utf8(buffer).expect("Couldn't convert buffer to string");
 }
 
-fn write_results (result: HashMap<String, u8>) -> Result<(), Error> {
+fn write_results (result: HashMap<String, u64>) -> Result<(), Error> {
     // Serialize it to a JSON string.
     let j = serde_json::to_string(&result)?;
 
-    let mut file = File::create("out/result.json").expect("crap");
-    file.write_all(j.as_bytes()).expect("crap");
+    let mut file = File::create("out/result.json").expect("Could not create file");
+    file.write_all(j.as_bytes()).expect("Could not write to file");
 
     Ok(())
 }
