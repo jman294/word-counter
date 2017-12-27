@@ -1,0 +1,9 @@
+[package]
+name = "text" # the name of the package
+version = "0.1.0"    # the current version, obeying semver
+authors = ["jduplessis294@gmail.com"]
+
+[dependencies]
+serde_json = "1.0.8"
+serde = "1.0.25"
+serde_derive = "1.0"
