@@ -1,0 +1,4 @@
+name: word_counter
+description: A word counter
+dependencies:
+    dartson: "^0.2.7"
